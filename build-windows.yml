@@ -1,0 +1,36 @@
+name: Build chunba Network AI Photo Classifier v2.0 R2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        shell: powershell
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build EXE
+        shell: powershell
+        run: |
+          pyinstaller --noconfirm --clean --onefile --windowed --name "chunba_network_photo_classifier_v2_0_r2" --collect-all pillow_heif chunba_network_photo_classifier_v2_0_r2.py
+
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: chunba-network-photo-classifier-v2-0-r2-windows
+          path: dist/chunba_network_photo_classifier_v2_0_r2.exe
+          if-no-files-found: error
+          retention-days: 30
